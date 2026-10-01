@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="La Nave Teatro - Compañía de teatro contemporáneo en Tijuana. Elenco, obras, noticias y programación de espectáculos teatrales.">
+<meta name="keywords" content="teatro, Tijuana, La Nave Teatro, compañía teatral, espectáculos, monólogo">
+<meta property="og:title" content="La Nave Teatro - Teatro independiente en Tijuana">
+<meta property="og:description" content="Compañía de teatro contemporáneo con espectáculos, elenco y noticias.">
+<meta property="og:type" content="website">
+<title>La Nave Teatro - Compañía de Teatro en Tijuana</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  --red:#7a1220; --red-bright:#b3222f;
+  --bg:#050505; --bg-alt:#0a0909; --card:#111010;
+  --text:#f2ede9; --text-muted:#a89f98; --border:#221d1c;
+  --font-heading:'Cormorant Garamond', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); 
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px); scroll-behavior:smooth;}
+:root[data-theme="light"]{
+  --bg:#ffffff; --bg-alt:#f6f3f1; --card:#ffffff;
+  --text:#171514; --text-muted:#5b5754; --border:#e5dfda;
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.6; letter-spacing:0.1px;}
+h1,h2,h3{font-family:var(--font-heading);}
+header{position:sticky; top:0; z-index:10; background:var(--bg); border-bottom:1px solid var(--border); padding:env(safe-area-inset-top,0px) 0 0 0;}
+.header-inner{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 16px; max-width:1200px; margin:0 auto; width:100%;}
+.brand img{height:38px; width:auto; display:block;}
+.search-bar{flex:1; max-width:300px; display:flex; margin:0 16px;}
+.search-bar input{width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--border); background:var(--card); color:var(--text); font-size:13px;}
+nav{display:flex; gap:14px; flex-wrap:wrap;}
+nav a{color:var(--text-muted); text-decoration:none; font-size:14px; font-weight:600;}
+nav a:hover{color:var(--red-bright);}
+.theme-switch{-webkit-appearance:none; appearance:none; width:44px; height:24px; border-radius:999px; background:var(--border); border:none; position:relative; cursor:pointer; padding:0; flex:none;}
+.theme-switch .knob{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:var(--red-bright); transition:left .18s ease;}
+.theme-switch.on .knob{left:22px; background:#d8c9a3;}
+.carousel{position:relative; width:100%; height:320px; background:var(--bg-alt); overflow:hidden;}
+.carousel-slide{position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; transition:opacity .5s ease; background-size:cover; background-position:center;}
+.carousel-slide.active{opacity:1;}
+.carousel-overlay{position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); display:flex; align-items:flex-end; padding:32px 16px;}
+.carousel-caption{color:#fff; font-size:28px; font-weight:700; letter-spacing:0.5px; text-shadow:0 2px 8px rgba(0,0,0,0.6); font-family:var(--font-heading);}
+.carousel-controls{position:absolute; bottom:16px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:5;}
+.carousel-dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.5); cursor:pointer; transition:background .2s;}
+.carousel-dot.active{background:var(--red-bright);}
+.carousel-nav{position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; z-index:5;}
+.carousel-nav.prev{left:16px;}
+.carousel-nav.next{right:16px;}
+main{max-width:1200px; margin:0 auto; padding:0 16px 60px;}
+section{padding:36px 0;}
+.accordion-header{display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; padding:12px 0; border-left:4px solid var(--red-bright); padding-left:12px; margin-bottom:8px;}
+.accordion-header h2{margin:0; font-size:26px; font-weight:600; letter-spacing:0.5px;}
+.accordion-header .toggle{font-size:12px; color:var(--text-muted); transition:transform .2s; font-weight:600;}
+.accordion-header.open .toggle{transform:rotate(180deg);}
+.accordion-content{display:none; margin-bottom:24px;}
+.accordion-content.open{display:block;}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; cursor:pointer; transition:border-color .2s; display:flex; flex-direction:column;}
+.card:hover{border-color:var(--red-bright);}
+.card-img{width:100%; height:140px; background:var(--bg-alt); border-radius:8px; object-fit:cover; margin-bottom:10px;}
+.card h3{margin:0 0 4px; font-size:15px;}
+.card .meta{color:var(--red-bright); font-size:12px; font-weight:600; margin-bottom:6px;}
+.card p{margin:0; color:var(--text-muted); font-size:13px; flex-grow:1;}
+.filters{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+.filter-btn{background:var(--card); border:1px solid var(--border); color:var(--text-muted); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; transition:all .2s;}
+.filter-btn.active{background:var(--red-bright); color:#fff; border-color:var(--red-bright);}
+.event-alert{background:var(--red-bright); color:#fff; padding:16px; border-radius:8px; margin-bottom:24px;}
+.event-alert h3{margin:0 0 8px; font-size:18px;}
+.gallery-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;}
+.gallery-img{width:100%; aspect-ratio:1; background:var(--bg-alt); border-radius:8px; object-fit:cover; cursor:pointer;}
+.newsletter-box{background:var(--bg-alt); border:1px solid var(--border); padding:20px; border-radius:8px; max-width:400px;}
+.newsletter-box input{width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);}
+.newsletter-box button{width:100%; background:var(--red-bright); color:#fff; border:none; padding:8px; border-radius:6px; font-weight:600; cursor:pointer;}
+.info-block{background:var(--card); border:1px solid var(--border); padding:16px; border-radius:8px; margin-bottom:16px;}
+.info-block h4{margin:0 0 8px; font-size:14px; color:var(--red-bright);}
+.info-block p{margin:0; font-size:14px; color:var(--text-muted);}
+.share-buttons{display:flex; gap:8px; margin-top:12px;}
+.share-buttons a{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:var(--border); color:var(--text-muted); text-decoration:none; font-size:14px; transition:background .2s;}
+.share-buttons a:hover{background:var(--red-bright); color:#fff;}
+.archive-list{display:flex; flex-direction:column; gap:12px;}
+.archive-item{background:var(--card); border-left:3px solid var(--red-bright); padding:12px; border-radius:4px; cursor:pointer;}
+.archive-item:hover{border-left-color:var(--red-bright);}
+.archive-item-date{color:var(--red-bright); font-size:12px; font-weight:600;}
+.archive-item-title{font-size:14px; font-weight:600; color:var(--text);}
+.modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center; padding:16px;}
+.modal.open{display:flex;}
+.modal-content{background:var(--bg); border:1px solid var(--border); border-radius:12px; max-width:650px; width:100%; max-height:90vh; overflow-y:auto; padding:28px;}
+.modal-close{float:right; background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer;}
+footer{border-top:1px solid var(--border); padding:24px 16px; text-align:center; color:var(--text-muted); font-size:12px;}
+.admin-bar{position:sticky; top:0; z-index:20; background:var(--red); color:#fff; display:none; align-items:center; justify-content:space-between; padding:8px 16px; font-size:12px;}
+.admin-bar.on{display:flex;}
+.admin-bar button{background:#fff; color:var(--red); border:none; border-radius:6px; padding:6px 12px; font-weight:700; cursor:pointer; font-size:12px;}
+.icon-btn{background:none; border:1px solid var(--border); border-radius:8px; padding:6px 10px; color:var(--text); cursor:pointer; font-size:14px;}
+.edit-panel{display:none; background:var(--bg-alt); border:1px dashed var(--red-bright); border-radius:10px; padding:12px; margin-top:12px;}
+.edit-panel.on{display:block;}
+.edit-panel input, .edit-panel textarea{width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:13px; font-family:inherit;}
+.edit-panel button{background:var(--red-bright); color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:600; cursor:pointer; font-size:12px; margin-right:6px;}
+.hidden{display:none !important;}
+@media(max-width:768px){
+  .header-inner{flex-direction:column; gap:8px;}
+  .search-bar{display:none;}
+  nav{gap:8px;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+}
+</style>
+</head>
+<body>
+
+<div class="admin-bar" id="adminBar">
+  <span>Modo edición</span>
+  <div style="display:flex; gap:6px;">
+    <button id="btnPublish">Publicar</button>
+    <button id="btnExitEdit">Salir</button>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='40'%3E%3Ctext x='5' y='30' font-size='28' font-weight='bold' fill='%23b3222f' font-family='serif'%3ELN%3C/text%3E%3C/svg%3E" alt="La Nave Teatro" style="height:38px; width:auto;">
+        <span style="font-family:var(--font-heading); font-size:16px; font-weight:600; letter-spacing:0.5px; color:var(--text);">La Nave Teatro</span>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="globalSearch" placeholder="Buscar artistas, obras, noticias..." onkeyup="doSearch()">
+    </div>
+    <nav>
+      <a href="#elenco">Elenco</a>
+      <a href="#muestras">Muestras</a>
+      <a href="#proximas">Próximas</a>
+      <a href="#blog">Blog</a>
+      <a href="#galeria">Galería</a>
+    </nav>
+    <div style="display:flex; gap:8px;">
+      <button class="theme-switch" id="themeToggle"><span class="knob"></span></button>
+      <button class="icon-btn hidden" id="editToggle">✎</button>
+    </div>
+  </div>
+</header>
+
+<div class="carousel" id="carousel">
+  <div id="carouselSlides"></div>
+  <div class="carousel-overlay">
+    <div class="carousel-caption" id="carouselCaption"></div>
+  </div>
+  <button class="carousel-nav prev" onclick="carouselPrev()">‹</button>
+  <button class="carousel-nav next" onclick="carouselNext()">›</button>
+  <div class="carousel-controls" id="carouselDots"></div>
+</div>
+
+<main>
+
+  <section id="proximas">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Próximas funciones</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <div id="eventsGrid"></div>
+      <div class="edit-panel" id="eventForm">
+        <input id="eventTitle" placeholder="Título">
+        <input id="eventDate" placeholder="Fecha (YYYY-MM-DD)" type="date">
+        <input id="eventTime" placeholder="Hora">
+        <input id="eventPlace" placeholder="Lugar">
+        <textarea id="eventDesc" placeholder="Descripción"></textarea>
+        <button onclick="addEvent()">Agregar función</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="about">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Sobre nosotros</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <p id="aboutText"></p>
+      <div class="info-block">
+        <h4>📍 Ubicación y horario</h4>
+        <p id="locInfo"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="elenco">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Elenco</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterActors('all')">Todos</button>
+        <button class="filter-btn" onclick="filterActors('Actor')">Actores</button>
+        <button class="filter-btn" onclick="filterActors('Director')">Directores</button>
+      </div>
+      <div class="grid" id="actorsGrid"></div>
+      <div class="edit-panel" id="actorForm">
+        <input id="actorName" placeholder="Nombre">
+        <input id="actorRole" placeholder="Rol">
+        <textarea id="actorBio" placeholder="Biografía"></textarea>
+        <button onclick="addActor()">Agregar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="galeria">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Galería de fotos</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content">
+      <div class="gallery-grid" id="galleryGrid"></div>
+      <div class="edit-panel" id="galleryForm">
+        <input id="galleryCaption" placeholder="Caption/descripción">
+        <button onclick="addGalleryPhoto()">Agregar foto</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="muestras">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Muestras y presentaciones</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterShows('all')">Todos</button>
+        <button class="filter-btn" onclick="filterShows('2024')">2024</button>
+        <button class="filter-btn" onclick="filterShows('2023')">2023</button>
+        <button class="filter-btn" onclick="filterShows('2022')">2022</button>
+      </div>
+      <div class="grid" id="showsGrid"></div>
+      <div class="edit-panel" id="showForm">
+        <input id="showTitle" placeholder="Título">
+        <input id="showAuthor" placeholder="Autor">
+        <input id="showYear" placeholder="Año">
+        <input id="showUrl" placeholder="URL">
+        <textarea id="showDesc" placeholder="Descripción"></textarea>
+        <button onclick="addShow()">Agregar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Blog y noticias</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <div id="blogGrid"></div>
+      <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+        <h3>Archivo de artículos</h3>
+        <div class="archive-list" id="archiveList"></div>
+      </div>
+      <div class="edit-panel" id="newsForm">
+        <input id="newsTitle" placeholder="Título">
+        <input id="newsAuthor" placeholder="Autor">
+        <textarea id="newsExcerpt" placeholder="Resumen" style="min-height:40px;"></textarea>
+        <textarea id="newsContent" placeholder="Contenido completo" style="min-height:150px;"></textarea>
+        <button onclick="addNews()">Publicar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h2>Contacto</h2>
+      <span class="toggle">⌄</span>
+    </div>
+    <div class="accordion-content open">
+      <div class="info-block">
+        <h4>📧 Email</h4>
+        <p id="emailInfo"></p>
+      </div>
+      <div class="info-block">
+        <h4>📱 Redes sociales</h4>
+        <div id="socialLinks"></div>
+      </div>
+      <div class="newsletter-box">
+        <h4>Suscribirse a noticias</h4>
+        <input type="email" id="newsletterEmail" placeholder="Tu email">
+        <button onclick="subscribeNewsletter()">Suscribirse</button>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Recibirás actualizaciones sobre funciones y noticias.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>La Nave Teatro © 2006-2026 | Powered by La Nave</footer>
+
+<script id="stateData" type="application/json">
+{"brand":{"name":"La Nave Teatro","tagline":"Teatro independiente en Tijuana desde 2006","about":"La Nave Teatro es una compañía de teatro contemporáneo de Tijuana, Baja California, cuyo origen se remonta a 2006 y se consolida formalmente en 2012 a partir de la colaboración entre Paco Mufote y Alan Márquez Lobato. Su trabajo se enfoca en la exploración del lenguaje escénico, el monólogo como formato y la creación interdisciplinaria entre teatro, cine y artes visuales.","contact":{"email":"naveteatro@gmail.com","phone":"+52 (664) XXX-XXXX","location":"Tijuana, Baja California, México"},"hours":"Lunes a viernes 10:00 - 18:00","social":{"Facebook":"https://www.facebook.com/LaNaveTeatroVive/","Instagram":"https://www.instagram.com/lanaveteatrovive/","YouTube":"https://www.youtube.com/@lanaveteatrovive","TikTok":"https://www.tiktok.com/@lanaveteatro"}},"carousel":[{"id":1,"image":"","caption":"La Nave Teatro"},{"id":2,"image":"","caption":"Teatro independiente en Tijuana"}],"events":[{"id":1,"title":"Próximas funciones","date":"2026-10-15","time":"20:00","place":"Sala principal","desc":"A la espera de programación oficial.","image":""}],"gallery":[{"id":1,"image":"","caption":"Escena de la obra"}],"actors":[{"id":1,"name":"Paco Mufote","role":"Actor y Director","bio":"Artista multidisciplinario con una larga trayectoria en el teatro independiente de Tijuana. Paco Mufote fue cofundador de La Nave Teatro y dedicó su vida a explorar la verdad escénica y el monólogo como forma de expresión profunda.","image":"","works":[1,7,9,10],"links":{"web":"","instagram":""}},{"id":2,"name":"Alan Márquez Lobato","role":"Director y Productor","bio":"Director teatral, productor y dramaturgo fundador de La Nave Teatro. Su trabajo se caracteriza por la exploración interdisciplinaria entre teatro, cine y artes visuales, buscando nuevos lenguajes escénicos.","image":"","works":[6,8,11],"links":{"web":"https://www.marquezfilms.com","instagram":""}}],"shows":[{"id":1,"title":"Un Buen Salvador","author":"Salvador Pelayo-Frías y David Cabezud","year":"2024","desc":"Un hombre con la memoria perdida y un guía casual que se convierten en amigos entrañables.","url":"https://www.marquezfilms.com/lanaveteatro/unbuensalvador/"},{"id":2,"title":"Diez. Ausencia del miedo","author":"Andrea Rodríguez y Víctor Iturríos","year":"2023","desc":"Una mujer se interna en un hospital psiquiátrico para documentar abusos y termina enfrentando su propio pasado.","url":"https://www.marquezfilms.com/lanaveteatro/diezausenciadelmiedo/"},{"id":3,"title":"Ya es hora","author":"María Elena Bañuelos","year":"2023","desc":"Una abuela sola cuenta los días para que sus nietos la visiten.","url":"https://www.marquezfilms.com/lanaveteatro/ya-es-hora/"}],"news":[{"id":4,"title":"14ª Muestra Internacional de Monólogos Paco Mufote 2026","date":"2026-09-18","author":"La Nave Teatro","image":"","excerpt":"La muestra adopta el nombre de Paco Mufote para su 14ª edición, con programación completa del 15 de octubre al 14 de noviembre en La Paz.","content":"La muestra adopta el nombre de Paco Mufote para su 14ª edición, con programación completa del 15 de octubre al 14 de noviembre en La Paz. Este festival reúne a artistas de toda Hispanoamérica en torno al monólogo como forma de expresión profunda.","featured":true}],"newsletter":[]}
+</script>
+
+<script>
+let STATE = JSON.parse(document.getElementById('stateData').textContent);
+let editing = false;
+let currentCarouselSlide = 0;
+let currentActorFilter = 'all';
+let currentShowsFilter = 'all';
+
+// Theme
+const themeBtn = document.getElementById('themeToggle');
+function applyTheme(mode){
+  if(mode === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  else document.documentElement.removeAttribute('data-theme');
+  themeBtn.classList.toggle('on', mode === 'light');
+}
+let currentMode = 'dark';
+try{ currentMode = localStorage.getItem('lnt-theme') || 'dark'; }catch(e){}
+applyTheme(currentMode);
+themeBtn.addEventListener('click', ()=>{
+  currentMode = currentMode === 'light' ? 'dark' : 'light';
+  applyTheme(currentMode);
+  try{ localStorage.setItem('lnt-theme', currentMode); }catch(e){}
+});
+
+function toggleAccordion(header){
+  const content = header.nextElementSibling;
+  content.classList.toggle('open');
+  header.classList.toggle('open');
+}
+
+function renderCarousel(){
+  const slides = STATE.carousel || [];
+  const container = document.getElementById('carouselSlides');
+  container.innerHTML = '';
+  slides.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.className = 'carousel-slide' + (i === currentCarouselSlide ? ' active' : '');
+    div.style.backgroundImage = s.image ? 'url(' + s.image + ')' : '';
+    container.appendChild(div);
+  });
+  const dotsContainer = document.getElementById('carouselDots');
+  dotsContainer.innerHTML = '';
+  slides.forEach((s,i)=>{
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === currentCarouselSlide ? ' active' : '');
+    dot.onclick = ()=>goToSlide(i);
+    dotsContainer.appendChild(dot);
+  });
+  document.getElementById('carouselCaption').textContent = slides[currentCarouselSlide]?.caption || '';
+}
+
+function carouselNext(){
+  const slides = STATE.carousel || [];
+  if(slides.length === 0) return;
+  currentCarouselSlide = (currentCarouselSlide + 1) % slides.length;
+  renderCarousel();
+}
+
+function carouselPrev(){
+  const slides = STATE.carousel || [];
+  if(slides.length === 0) return;
+  currentCarouselSlide = (currentCarouselSlide - 1 + slides.length) % slides.length;
+  renderCarousel();
+}
+
+function goToSlide(n){
+  currentCarouselSlide = n;
+  renderCarousel();
+}
+
+function doSearch(){
+  const term = document.getElementById('globalSearch').value.toLowerCase();
+  if(!term) {
+    render();
+    return;
+  }
+  const results = {actors: [], shows: [], news: []};
+  STATE.actors.forEach(a=>{
+    if(a.name.toLowerCase().includes(term)) results.actors.push(a);
+  });
+  STATE.shows.forEach(s=>{
+    if(s.title.toLowerCase().includes(term)) results.shows.push(s);
+  });
+  STATE.news.forEach(n=>{
+    if(n.title.toLowerCase().includes(term)) results.news.push(n);
+  });
+  
+  let html = '';
+  if(results.actors.length){
+    html += '<h3>Artistas encontrados:</h3>';
+    results.actors.forEach(a=>{
+      html += '<div style="padding:8px 0; border-bottom:1px solid var(--border);"><strong>' + a.name + '</strong><br><span style="font-size:12px; color:var(--text-muted);">' + a.role + '</span></div>';
+    });
+  }
+  if(results.shows.length){
+    html += '<h3>Obras encontradas:</h3>';
+    results.shows.forEach(s=>{
+      html += '<div style="padding:8px 0; border-bottom:1px solid var(--border);"><strong>' + s.title + '</strong><br><span style="font-size:12px; color:var(--text-muted);">' + s.author + ' - ' + s.year + '</span></div>';
+    });
+  }
+  if(results.news.length){
+    html += '<h3>Noticias encontradas:</h3>';
+    results.news.forEach(n=>{
+      html += '<div style="padding:8px 0; border-bottom:1px solid var(--border);"><strong>' + n.title + '</strong><br><span style="font-size:12px; color:var(--text-muted);">' + n.date + '</span></div>';
+    });
+  }
+  
+  const grid = document.getElementById('actorsGrid');
+  grid.innerHTML = html;
+}
+
+function renderActors(){
+  const container = document.getElementById('actorsGrid');
+  container.innerHTML = '';
+  let actors = STATE.actors;
+  if(currentActorFilter !== 'all') actors = actors.filter(a=>a.role.includes(currentActorFilter));
+  actors.forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '<h3>' + a.name + '</h3><div class="meta">' + a.role + '</div><p>' + a.bio.substring(0,80) + '...</p>';
+    container.appendChild(div);
+  });
+}
+
+function renderShows(){
+  const container = document.getElementById('showsGrid');
+  container.innerHTML = '';
+  let shows = STATE.shows;
+  if(currentShowsFilter !== 'all') shows = shows.filter(s=>s.year === currentShowsFilter);
+  shows.forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '<h3><a href="' + s.url + '" target="_blank" style="color:inherit; text-decoration:none;">' + s.title + '</a></h3><div class="meta">' + s.author + ' - ' + s.year + '</div><p>' + s.desc + '</p>';
+    container.appendChild(div);
+  });
+}
+
+function renderNews(){
+  const container = document.getElementById('blogGrid');
+  container.innerHTML = '';
+  (STATE.news || []).slice(0,3).forEach(n=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = '<h3>' + n.title + '</h3><div class="meta">' + n.date + ' • ' + n.author + '</div><p>' + n.excerpt + '</p>';
+    container.appendChild(div);
+  });
+}
+
+function renderArchive(){
+  const container = document.getElementById('archiveList');
+  container.innerHTML = '';
+  (STATE.news || []).forEach(n=>{
+    const div = document.createElement('div');
+    div.className = 'archive-item';
+    div.innerHTML = '<div class="archive-item-date">' + n.date + '</div><div class="archive-item-title">' + n.title + '</div>';
+    container.appendChild(div);
+  });
+}
+
+function renderEvents(){
+  const container = document.getElementById('eventsGrid');
+  container.innerHTML = '';
+  (STATE.events || []).forEach(e=>{
+    const div = document.createElement('div');
+    div.className = 'event-alert';
+    div.innerHTML = '<h3>' + e.title + '</h3><p>' + e.date + ' a las ' + e.time + ' • ' + e.place + '</p><p>' + e.desc + '</p>';
+    container.appendChild(div);
+  });
+}
+
+function renderGallery(){
+  const container = document.getElementById('galleryGrid');
+  container.innerHTML = '';
+  (STATE.gallery || []).forEach(g=>{
+    const div = document.createElement('div');
+    div.style.background = 'var(--bg-alt)';
+    div.style.width = '100%';
+    div.style.aspectRatio = '1';
+    div.style.borderRadius = '8px';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.style.color = 'var(--text-muted)';
+    div.textContent = g.caption || 'Sin foto';
+    container.appendChild(div);
+  });
+}
+
+function render(){
+  document.getElementById('aboutText').textContent = STATE.brand.about;
+  const c = STATE.brand.contact || {};
+  document.getElementById('locInfo').innerHTML = '<strong>' + c.location + '</strong><br>Horario: ' + STATE.brand.hours;
+  document.getElementById('emailInfo').innerHTML = '<a href="mailto:' + c.email + '" style="color:var(--red-bright);">' + c.email + '</a><br>Tel: ' + c.phone;
+  
+  const socEl = document.getElementById('socialLinks');
+  socEl.innerHTML = '';
+  Object.keys(STATE.brand.social || {}).forEach(k=>{
+    const a = document.createElement('a');
+    a.href = STATE.brand.social[k];
+    a.target = '_blank';
+    a.textContent = k;
+    a.style.cssText = 'color:var(--red-bright); font-weight:600; font-size:14px; text-decoration:none; display:block; margin:4px 0;';
+    socEl.appendChild(a);
+  });
+
+  renderActors();
+  renderShows();
+  renderNews();
+  renderArchive();
+  renderEvents();
+  renderGallery();
+  renderCarousel();
+
+  document.querySelectorAll('.edit-panel').forEach(p=>p.classList.toggle('on', editing));
+}
+
+function nextId(arr){ return arr.length ? Math.max(...arr.map(x=>x.id))+1 : 1; }
+
+function filterActors(role){
+  currentActorFilter = role;
+  document.querySelectorAll('.filters .filter-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderActors();
+}
+
+function filterShows(year){
+  currentShowsFilter = year;
+  document.querySelectorAll('.filters .filter-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderShows();
+}
+
+function addActor(){
+  const name = document.getElementById('actorName').value.trim();
+  if(!name) return;
+  STATE.actors.push({id:nextId(STATE.actors), name, role:document.getElementById('actorRole').value.trim(), bio:document.getElementById('actorBio').value.trim(), image:'', works:[], links:{}});
+  document.getElementById('actorName').value='';
+  document.getElementById('actorRole').value='';
+  document.getElementById('actorBio').value='';
+  render();
+}
+
+function addShow(){
+  const title = document.getElementById('showTitle').value.trim();
+  if(!title) return;
+  STATE.shows.push({id:nextId(STATE.shows), title, author:document.getElementById('showAuthor').value.trim(), year:document.getElementById('showYear').value.trim(), desc:document.getElementById('showDesc').value.trim(), url:document.getElementById('showUrl').value.trim()});
+  ['showTitle', 'showAuthor', 'showYear', 'showDesc', 'showUrl'].forEach(id=>document.getElementById(id).value='');
+  render();
+}
+
+function addNews(){
+  const title = document.getElementById('newsTitle').value.trim();
+  if(!title) return;
+  STATE.news.push({id:nextId(STATE.news), title, date:new Date().toISOString().split('T')[0], author:document.getElementById('newsAuthor').value.trim(), excerpt:document.getElementById('newsExcerpt').value.trim(), content:document.getElementById('newsContent').value.trim(), image:'', featured:true});
+  ['newsTitle', 'newsAuthor', 'newsExcerpt', 'newsContent'].forEach(id=>document.getElementById(id).value='');
+  render();
+}
+
+function addEvent(){
+  const title = document.getElementById('eventTitle').value.trim();
+  if(!title) return;
+  STATE.events.push({id:nextId(STATE.events), title, date:document.getElementById('eventDate').value, time:document.getElementById('eventTime').value, place:document.getElementById('eventPlace').value.trim(), desc:document.getElementById('eventDesc').value.trim(), image:''});
+  ['eventTitle', 'eventDate', 'eventTime', 'eventPlace', 'eventDesc'].forEach(id=>document.getElementById(id).value='');
+  render();
+}
+
+function addGalleryPhoto(){
+  const caption = document.getElementById('galleryCaption').value.trim();
+  STATE.gallery.push({id:nextId(STATE.gallery), image:'', caption});
+  document.getElementById('galleryCaption').value='';
+  render();
+}
+
+function subscribeNewsletter(){
+  const email = document.getElementById('newsletterEmail').value.trim();
+  if(!email) return;
+  if(!STATE.newsletter.includes(email)) STATE.newsletter.push(email);
+  document.getElementById('newsletterEmail').value='';
+  alert('¡Suscrito! Recibirás noticias en tu email.');
+}
+
+document.getElementById('editToggle').addEventListener('click', ()=>{
+  editing = !editing;
+  document.getElementById('adminBar').classList.toggle('on', editing);
+  render();
+});
+
+document.getElementById('btnExitEdit').addEventListener('click', ()=>{
+  editing = false;
+  document.getElementById('adminBar').classList.remove('on');
+  render();
+});
+
+document.getElementById('btnPublish').addEventListener('click', ()=>{
+  alert('Cambios publicados! (pronto con Firebase)');
+});
+
+document.getElementById('editToggle').classList.remove('hidden');
+
+render();
+setInterval(()=>carouselNext(), 5000);
+</script>
+</body>
+</html>
