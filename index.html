@@ -812,20 +812,19 @@ function esAdmin(user) {
   return !!(user && user.email && user.emailVerified && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 }
 
-let FB = null;            // { app, auth, db, st, authM, fsM, stM }
+let FB = null;            // { auth, db, authM, fsM }
 let isLoggedIn = false;
 let S = JSON.parse(JSON.stringify(DEFAULT));
 
 async function initFirebase() {
   const base = 'https://www.gstatic.com/firebasejs/' + FB_VER + '/';
-  const [appM, authM, fsM, stM] = await Promise.all([
+  const [appM, authM, fsM] = await Promise.all([
     import(base + 'firebase-app.js'),
     import(base + 'firebase-auth.js'),
     import(base + 'firebase-firestore.js'),
-    import(base + 'firebase-storage.js')
   ]);
   const app = appM.initializeApp(FIREBASE_CONFIG);
-  FB = { authM, fsM, stM, auth: authM.getAuth(app), db: fsM.getFirestore(app), st: stM.getStorage(app) };
+  FB = { authM, fsM, auth: authM.getAuth(app), db: fsM.getFirestore(app) };
   // Espera a que Firebase confirme si hay sesión activa
   await new Promise(resolve => {
     let first = true;
@@ -869,13 +868,27 @@ async function saveState() {
 }
 
 // Si la imagen es nueva (data:), la sube a Storage y devuelve su URL pública
-async function resolveImage(hiddenId, folder) {
+// Imágenes en Firestore (colección 'imagenes'); el contenido guarda 'fsimg:ID'
+const IMG_CACHE = {};
+const IMG_MAX_CHARS = 950000;
+
+function newImgId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+async function saveImage(dataUrl) {
+  if (dataUrl.length > IMG_MAX_CHARS) throw new Error('la imagen sigue siendo muy grande');
+  const id = newImgId();
+  await FB.fsM.setDoc(FB.fsM.doc(FB.db, 'imagenes', id), { data: dataUrl, creado: new Date().toISOString() });
+  IMG_CACHE[id] = dataUrl;
+  return id;
+}
+
+async function resolveImage(hiddenId) {
   const v = document.getElementById(hiddenId).value;
-  if (!v || !v.startsWith('data:')) return v || '';
-  const path = folder + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
-  const r = FB.stM.ref(FB.st, path);
-  await FB.stM.uploadString(r, v, 'data_url');
-  return await FB.stM.getDownloadURL(r);
+  if (!v) return '';
+  if (!v.startsWith('data:')) return v;
+  return 'fsimg:' + await saveImage(v);
 }
 
 
@@ -1066,7 +1079,7 @@ function renderElenco() {
   document.getElementById('grid-actors').innerHTML = S.actors.length
     ? S.actors.map(a => `
       <div class="card-actor">
-        <div class="avatar">${a.image ? `<img src="${a.image}" alt="${a.name}">` : (a.name||'?')[0]}</div>
+        <div class="avatar">${a.image ? imgTag(a.image, `alt="${esc(a.name)}"`) : (a.name||'?')[0]}</div>
         <div class="actor-name">${a.name}</div>
         <div class="actor-role">${a.role}</div>
         <div class="actor-bio">${richHTML(a.bio)}</div>
@@ -1147,7 +1160,7 @@ const DROP_TAGS = ['SCRIPT','STYLE','NOSCRIPT','TEMPLATE','OBJECT','EMBED','SVG'
 const RICH_CSS = ['color','font-family','font-size','text-align','font-weight','font-style','text-decoration'];
 const RICH_ATTRS = {
   A: ['href','target','rel'],
-  IMG: ['src','alt'],
+  IMG: ['src','alt','data-fsimg'],
   IFRAME: ['src','allowfullscreen','frameborder','title','loading'],
   VIDEO: ['src','controls','playsinline','preload']
 };
@@ -1173,7 +1186,8 @@ function cleanNode(parent) {
       if (!n.getAttribute('style')) n.removeAttribute('style');
     }
     const src = n.getAttribute('src') || '';
-    if (n.tagName === 'IMG' && !/^https:\/\//i.test(src)) { n.remove(); return; }
+    if (n.hasAttribute('data-fsimg') && !/^[A-Za-z0-9_-]{5,40}$/.test(n.getAttribute('data-fsimg'))) { n.remove(); return; }
+    if (n.tagName === 'IMG' && !/^https:\/\//i.test(src) && !n.hasAttribute('data-fsimg')) { n.remove(); return; }
     if (n.tagName === 'VIDEO' && !/^https:\/\//i.test(src)) { n.remove(); return; }
     if (n.tagName === 'IFRAME' && !EMBED_RE.test(src)) { n.remove(); return; }
     if (n.tagName === 'A') {
@@ -1259,7 +1273,9 @@ function rteSet(id, html) {
 }
 
 function rteGet(id) {
-  return sanitizeHTML(document.getElementById(id + '-body').innerHTML).replace(/^(<br>)+$/, '');
+  const clone = document.getElementById(id + '-body').cloneNode(true);
+  clone.querySelectorAll('img[data-fsimg]').forEach(i => i.removeAttribute('src'));
+  return sanitizeHTML(clone.innerHTML).replace(/^(<br>)+$/, '');
 }
 
 function countChars(el) {
@@ -1276,18 +1292,23 @@ function pickFile(accept, cb) {
   i.click();
 }
 
-function compressImage(file) {
+// Convierte la imagen a JPEG y reduce tamaño hasta que quepa en Firestore
+function imageToDataURL(file) {
   return new Promise((res, rej) => {
     const fr = new FileReader();
     fr.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 1600;
-        const k = Math.min(1, MAX / Math.max(img.width, img.height));
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        c.toBlob(b => b ? res(b) : rej(new Error('No se pudo procesar la imagen')), 'image/jpeg', 0.82);
+        const steps = [[1200, 0.8], [1000, 0.7], [800, 0.6], [640, 0.5]];
+        for (const [MAX, q] of steps) {
+          const k = Math.min(1, MAX / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const out = c.toDataURL('image/jpeg', q);
+          if (out.length <= IMG_MAX_CHARS) return res(out);
+        }
+        rej(new Error('la imagen es demasiado grande, usa una más chica'));
       };
       img.onerror = () => rej(new Error('El archivo no es una imagen válida'));
       img.src = fr.result;
@@ -1297,13 +1318,39 @@ function compressImage(file) {
   });
 }
 
-async function uploadBlob(blob, folder, ext) {
-  if (!FB) throw new Error('No hay conexión con el servidor');
-  const path = folder + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-  const r = FB.stM.ref(FB.st, path);
-  await FB.stM.uploadBytes(r, blob);
-  return FB.stM.getDownloadURL(r);
+async function imgData(id) {
+  if (IMG_CACHE[id]) return IMG_CACHE[id];
+  const snap = await FB.fsM.getDoc(FB.fsM.doc(FB.db, 'imagenes', id));
+  if (!snap.exists()) return '';
+  IMG_CACHE[id] = snap.data().data;
+  return IMG_CACHE[id];
 }
+
+// Rellena las imágenes guardadas en Firestore conforme aparecen en la página
+function hydrateImgs() {
+  document.querySelectorAll('img[data-fsimg]').forEach(el => {
+    if (el.getAttribute('src') || el.dataset.loading) return;
+    el.dataset.loading = '1';
+    imgData(el.dataset.fsimg).then(src => { if (src) el.src = src; }).catch(() => {});
+  });
+}
+new MutationObserver(hydrateImgs).observe(document.body, { childList: true, subtree: true });
+
+// Devuelve el <img> para un valor guardado (fsimg:ID o URL)
+function imgTag(v, attrs) {
+  if (!v) return '';
+  if (v.startsWith('fsimg:')) return '<img data-fsimg="' + v.slice(6) + '" ' + attrs + '>';
+  return '<img src="' + v.replace(/"/g, '&quot;') + '" ' + attrs + '>';
+}
+
+function setPreview(prev, v) {
+  if (!v) { prev.style.display = 'none'; return; }
+  const show = src => { prev.src = src; prev.style.display = 'block'; };
+  if (v.startsWith('fsimg:')) imgData(v.slice(6)).then(show).catch(() => {});
+  else show(v);
+}
+
+
 
 function videoEmbed(url) {
   const u = url.trim();
@@ -1318,29 +1365,18 @@ function rteMedia(id, kind) {
   if (kind === 'image') {
     pickFile('image/*', async file => {
       try {
-        const blob = await compressImage(file);
-        const url = await uploadBlob(blob, 'contenido', 'jpg');
-        rteInsert(id, '<p><img src="' + url.replace(/"/g, '&quot;') + '" alt=""></p>');
+        const dataUrl = await imageToDataURL(file);
+        const imgId = await saveImage(dataUrl);
+        rteInsert(id, '<p><img data-fsimg="' + imgId + '" src="' + dataUrl + '" alt=""></p>');
       } catch (e) { alert('No se pudo subir la imagen: ' + e.message); }
     });
     return;
   }
-  const url = prompt('Pega el enlace de YouTube o Vimeo.\nSi lo dejas vacío, podrás subir un video MP4 o WebM (máx. 30 MB).');
-  if (url === null) return;
-  if (url.trim()) {
-    const embed = videoEmbed(url);
-    if (!embed) { alert('Ese enlace no es de YouTube ni de Vimeo.'); return; }
-    rteInsert(id, '<p>' + embed + '</p>');
-    return;
-  }
-  pickFile('video/mp4,video/webm', async file => {
-    if (file.size > 30 * 1024 * 1024) { alert('El video pesa más de 30 MB. Usa un enlace de YouTube o Vimeo.'); return; }
-    try {
-      const ext = file.type === 'video/webm' ? 'webm' : 'mp4';
-      const u = await uploadBlob(file, 'videos', ext);
-      rteInsert(id, '<p><video controls playsinline preload="metadata" src="' + u.replace(/"/g, '&quot;') + '"></video></p>');
-    } catch (e) { alert('No se pudo subir el video: ' + e.message); }
-  });
+  const url = prompt('Pega el enlace de YouTube o Vimeo del video:');
+  if (!url || !url.trim()) return;
+  const embed = videoEmbed(url);
+  if (!embed) { alert('Ese enlace no es de YouTube ni de Vimeo.'); return; }
+  rteInsert(id, '<p>' + embed + '</p>');
 }
 
 function rteInsert(id, html) {
@@ -1519,7 +1555,7 @@ async function loadStats() {
   drawStats(days, visits, sessions, uniques, agg);
 }
 
-function top(obj, n) {
+function topEntries(obj, n) {
   return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
 }
 
@@ -1539,7 +1575,7 @@ function drawStats(days, visits, sessions, uniques, agg) {
   ] }, options: { ...base, scales: axes } });
 
   const bar = (id, obj, label) => {
-    const t = top(obj, 10);
+    const t = topEntries(obj, 10);
     mk(id, { type: 'bar', data: { labels: t.map(x => x[0]), datasets: [{ label, data: t.map(x => x[1]), backgroundColor: RED }] },
       options: { ...base, indexAxis: 'y', plugins: { legend: { display: false } }, scales: axes } });
   };
@@ -1548,7 +1584,7 @@ function drawStats(days, visits, sessions, uniques, agg) {
   bar('ch-refs', agg.referrers, 'Sesiones');
   bar('ch-pages', agg.pages, 'Vistas');
 
-  const dev = top(agg.devices, 10);
+  const dev = topEntries(agg.devices, 10);
   mk('ch-devices', { type: 'doughnut', data: { labels: dev.map(x => x[0]),
     datasets: [{ data: dev.map(x => x[1]), backgroundColor: [RED, '#888', '#4a90e2'] }] },
     options: base });
@@ -1658,7 +1694,7 @@ function renderNoticias() {
           <div class="blog-exc">${esc(resumen)}</div>
           <div class="blog-more">Leer más →</div>
         </div>
-        <div class="blog-thumb">${n.image?`<img src="${n.image}" alt="${esc(n.title)}">`:'📸'}</div>
+        <div class="blog-thumb">${n.image ? imgTag(n.image, `alt="${esc(n.title)}"`) : '📸'}</div>
       </div>`; }).join('')
     : '<p style="padding:40px;color:var(--text-muted);text-align:center">No hay noticias publicadas.</p>';
 }
@@ -1685,7 +1721,7 @@ function renderNoticia(id) {
     ${n.date ? `<div class="art-date">${esc(fmtDate(n.date))}</div>` : ''}
     <h1 class="art-title">${esc(n.title)}</h1>
     ${n.author ? `<div class="art-author">Por ${esc(n.author)}</div>` : ''}
-    ${n.image ? `<img class="art-img" src="${n.image}" alt="${esc(n.title)}">` : ''}
+    ${n.image ? imgTag(n.image, `class="art-img" alt="${esc(n.title)}"`) : ''}
     <div class="art-body rich">${richHTML(n.content || n.excerpt)}</div>
     <div class="art-actions"><button class="btn-sm" onclick="shareNews()">Compartir</button></div>
   </article>`;
@@ -1707,7 +1743,7 @@ function renderGaleria() {
   document.getElementById('grid-gallery').innerHTML = S.gallery.length
     ? S.gallery.map(g=>`
       <div class="gitem">
-        ${g.image?`<img src="${g.image}" alt="${g.caption}">`:`<div class="gph">◻</div>`}
+        ${g.image ? imgTag(g.image, `alt="${esc(g.caption)}"`) : `<div class="gph">◻</div>`}
         <div class="gcap">${g.caption}</div>
       </div>`).join('')
     : '<p style="padding:40px;color:var(--text-muted);text-align:center">Galería vacía.</p>';
@@ -1901,7 +1937,7 @@ function openModal(type, idx) {
     rteSet('m-actor-bio', a.bio||'');
     document.getElementById('m-actor-img-data').value = a.image||'';
     const prev = document.getElementById('m-actor-img-prev');
-    if (a.image) { prev.src=a.image; prev.style.display='block'; } else { prev.style.display='none'; }
+    setPreview(prev, a.image);
   }
   if (type==='show') {
     const s = idx>=0 ? S.shows[idx] : {};
@@ -1932,14 +1968,14 @@ function openModal(type, idx) {
     rteSet('m-news-content', n.content||'');
     document.getElementById('m-news-img-data').value = n.image||'';
     const prev = document.getElementById('m-news-img-prev');
-    if (n.image) { prev.src=n.image; prev.style.display='block'; } else { prev.style.display='none'; }
+    setPreview(prev, n.image);
   }
   if (type==='gallery') {
     const g = idx>=0 ? S.gallery[idx] : {};
     document.getElementById('m-gallery-caption').value  = g.caption||'';
     document.getElementById('m-gallery-img-data').value = g.image||'';
     const prev = document.getElementById('m-gallery-img-prev');
-    if (g.image) { prev.src=g.image; prev.style.display='block'; } else { prev.style.display='none'; }
+    setPreview(prev, g.image);
   }
 }
 
@@ -1951,7 +1987,7 @@ async function saveItem(type) {
   const imgMap = { actor: ['m-actor-img-data', 'elenco'], news: ['m-news-img-data', 'noticias'], gallery: ['m-gallery-img-data', 'galeria'] };
   let image = '';
   if (imgMap[type]) {
-    try { image = await resolveImage(imgMap[type][0], imgMap[type][1]); }
+    try { image = await resolveImage(imgMap[type][0]); }
     catch (e) { alert('No se pudo subir la imagen: ' + e.message); return; }
   }
   const idx = editingIdx[type];
