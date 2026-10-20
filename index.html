@@ -267,7 +267,7 @@ nav a.active{color:var(--red-bright);}
 .rte-bar select,.rte-bar button{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:12px;padding:4px 6px;border-radius:2px;font-family:var(--font-b);cursor:pointer;}
 .rte-bar input[type=color]{width:34px;height:28px;border:1px solid var(--border);background:none;padding:0;cursor:pointer;}
 .rte-sep{width:1px;height:20px;background:var(--border);margin:0 4px;}
-.rte-body{padding:14px;outline:none;font-size:15px;line-height:1.7;color:var(--text);max-height:60vh;overflow-y:auto;}
+.rte-body{padding:14px;outline:none;font-size:15px;line-height:1.7;color:var(--text);}
 .rte-body:focus{box-shadow:inset 0 0 0 1px var(--red-bright);}
 .rich{color:var(--text);line-height:1.85;font-size:16px;overflow-wrap:anywhere;}
 .rich p,.rich div,.rte-body p,.rte-body div{margin-bottom:14px;}
@@ -507,7 +507,7 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
         </div>
         <div class="form-group"><label>Tagline / Subtítulo</label><input id="a-tagline" type="text"></div>
         <div class="form-group"><label>Descripción corta (portada) <span class="cnt" id="cnt-a-short"></span></label><textarea id="a-short" maxlength="400" rows="3" oninput="countChars(this)"></textarea></div>
-        <div class="form-group"><label>Sobre nosotros (página completa)</label><div class="rte"><div class="rte-bar">
+        <div class="form-group"><label>Sobre nosotros (página completa) <span class="cnt" id="cnt-a-about"></span></label><div class="rte"><div class="rte-bar">
 <select onchange="rteFont('a-about',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
 <select onchange="rteSize('a-about',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
 <input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-about','foreColor',this.value)">
@@ -521,7 +521,7 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 <button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-about','removeFormat')">Limpiar</button>
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','image')">Imagen</button>
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','video')">Video</button>
-</div><div class="rte-body" id="a-about-body" contenteditable="true" style="min-height:260px"></div></div></div>
+</div><div class="rte-body" id="a-about-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-about')"></div></div></div>
         <div class="form-row">
           <div class="form-group"><label>Email de contacto</label><input id="a-email" type="email"></div>
           <div class="form-group"><label>Teléfono</label><input id="a-phone" type="text"></div>
@@ -1206,9 +1206,37 @@ function sanitizeHTML(html) {
 }
 
 // Texto guardado sin formato (antiguo) se convierte en párrafos
-function richHTML(str) {
+
+// Luminosidad (0 negro, 1 blanco) de un color CSS
+function colorLum(c) {
+  const d = document.createElement('span');
+  d.style.color = c;
+  document.body.appendChild(d);
+  const m = getComputedStyle(d).color.match(/[\d.]+/g);
+  d.remove();
+  if (!m || m.length < 3) return null;
+  return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) / 255;
+}
+
+// Quita colores de texto que no se leen con el tema actual (p. ej. negro en modo oscuro)
+function fixContrast(html) {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  t.content.querySelectorAll('[style]').forEach(el => {
+    const c = el.style.color;
+    if (!c) return;
+    const l = colorLum(c);
+    if (l === null) return;
+    if ((dark && l < 0.45) || (!dark && l > 0.7)) el.style.removeProperty('color');
+    if (!el.getAttribute('style')) el.removeAttribute('style');
+  });
+  return t.innerHTML;
+}
+
+function richHTML(str, forAdmin) {
   if (!str) return '';
-  if (/<[a-z][\s\S]*>/i.test(str)) return sanitizeHTML(str);
+  if (/<[a-z][\s\S]*>/i.test(str)) return forAdmin ? sanitizeHTML(str) : fixContrast(sanitizeHTML(str));
   return str.split(/\n\s*\n/).map(p => '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>').join('');
 }
 
@@ -1269,7 +1297,13 @@ function rteSize(id, sel) {
 }
 
 function rteSet(id, html) {
-  document.getElementById(id + '-body').innerHTML = richHTML(html || '');
+  document.getElementById(id + '-body').innerHTML = richHTML(html || '', true);
+}
+
+function rteCount(id) {
+  const ed = document.getElementById(id + '-body');
+  const c = document.getElementById('cnt-' + id);
+  if (ed && c) c.textContent = ed.innerText.trim().length + ' caracteres';
 }
 
 function rteGet(id) {
@@ -1808,6 +1842,7 @@ function renderAdminBrand() {
   document.getElementById('a-founded').value  = b.founded||DEFAULT_YEAR;
   document.getElementById('a-tagline').value  = b.tagline||'';
   rteSet('a-about', b.about||'');
+  rteCount('a-about');
   document.getElementById('a-short').value = b.shortDesc||'';
   document.getElementById('a-wa').value = b.whatsapp||'';
   countChars(document.getElementById('a-short'));
