@@ -306,6 +306,17 @@ mark{background:rgba(179,34,47,0.35);color:inherit;padding:0 2px;}
 /* BOTÓN DE BOLETOS */
 .ticket-btn{display:inline-block;margin-top:14px;padding:10px 20px;background:var(--red);color:var(--text);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .2s;}
 .ticket-btn:hover{background:var(--red-bright);}
+/* FICHA DE ACTOR */
+.actor-hero{display:grid;grid-template-columns:220px 1fr;gap:36px;align-items:start;max-width:900px;margin:0 auto;padding:40px 24px 20px;}
+.actor-photo-big{width:100%;aspect-ratio:3/4;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-size:64px;color:var(--red-bright);overflow:hidden;}
+.actor-photo-big img{width:100%;height:100%;object-fit:cover;}
+.actor-name-big{font-family:var(--font-h);font-size:clamp(34px,5vw,52px);font-weight:300;line-height:1.1;margin-bottom:8px;}
+.actor-role-big{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red-bright);margin-bottom:24px;}
+.actor-shows{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+.actor-shows h3{font-family:var(--font-h);font-size:26px;font-weight:300;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:12px;}
+.actor-show-item{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.actor-more{display:inline-block;margin-top:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--red-bright);}
+@media(max-width:640px){.actor-hero{grid-template-columns:1fr;}.actor-photo-big{max-width:260px;margin:0 auto;}}
 footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
   color:var(--text-muted);border-top:1px solid var(--border);}
 
@@ -449,6 +460,11 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 </div>
 
 <!-- ── NOTICIA (lectura) ── -->
+<div class="view" id="view-actor">
+  <div id="actor-detail"></div>
+  <footer class="site-footer"></footer>
+</div>
+
 <div class="view" id="view-noticia">
   <div id="noticia-detail"></div>
   <footer class="site-footer"></footer>
@@ -951,7 +967,7 @@ function showAdminPanel() {
   document.getElementById('btn-admin').style.display = 'inline-block';
   document.getElementById('btn-admin').textContent = '✎ Panel';
   if (location.hash !== '#admin') history.pushState(null,'','#admin');
-  const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','galeria','contacto','admin-login','admin'];
+  const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
   VIEWS.forEach(v => { const el=document.getElementById('view-'+v); if(el) el.classList.remove('active'); });
   document.getElementById('view-admin').classList.add('active');
   toggleMenu(false);
@@ -963,7 +979,7 @@ function showAdminPanel() {
 // ══════════════════════════════════════════
 // ROUTER
 // ══════════════════════════════════════════
-const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','galeria','contacto','admin-login','admin'];
+const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
 
 function go(view, e) {
   if (e) e.preventDefault();
@@ -1014,6 +1030,7 @@ function handleHash() {
   navFromHash = true;   // al usar atrás/adelante no se agregan entradas nuevas al historial
   try {
     if (hash.startsWith('noticia/')) { openNews(hash.slice(8)); return; }
+    if (hash.startsWith('actor/')) { openActor(hash.slice(6)); return; }
     if (hash === 'blog') hash = 'noticias';   // enlaces viejos
     const valid = ['home','sobre','buscar','elenco','muestras','proximas','noticias','galeria','contacto','admin'];
     go(valid.includes(hash) ? hash : 'home');
@@ -1078,11 +1095,12 @@ function renderHome() {
 function renderElenco() {
   document.getElementById('grid-actors').innerHTML = S.actors.length
     ? S.actors.map(a => `
-      <div class="card-actor">
+      <div class="card-actor" onclick="openActor('${a.id}')" style="cursor:pointer">
         <div class="avatar">${a.image ? imgTag(a.image, `alt="${esc(a.name)}"`) : (a.name||'?')[0]}</div>
         <div class="actor-name">${a.name}</div>
         <div class="actor-role">${a.role}</div>
         <div class="actor-bio">${richHTML(a.bio)}</div>
+        <span class="actor-more">Ver perfil →</span>
       </div>`).join('')
     : '<p style="padding:40px;color:var(--text-muted);text-align:center">No hay actores registrados aún.</p>';
 }
@@ -1701,6 +1719,49 @@ function ticketLink(e) {
   if (e.place) msg += ' en ' + e.place;
   msg += '. ¿Me podrías compartir los datos para el pago? Gracias.';
   return '<a class="ticket-btn" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Comprar ticket</a>';
+}
+
+
+// ══════════════════════════════════════════
+// FICHA DE ACTOR
+// ══════════════════════════════════════════
+function openActor(id) {
+  activateView('actor');
+  if (!navFromHash) history.pushState(null, '', '#actor/' + id);
+  renderActor(id);
+  window.scrollTo(0, 0);
+}
+
+function renderActor(id) {
+  const a = S.actors.find(x => String(x.id) === String(id));
+  const box = document.getElementById('actor-detail');
+  if (!a) {
+    box.innerHTML = '<div class="actor-hero"><div><button class="art-back" onclick="go(\'elenco\',event)">← Volver al elenco</button><p style="color:var(--text-muted);margin-top:20px">Este perfil no existe o fue eliminado.</p></div></div>';
+    return;
+  }
+  const key = String(a.name || '').toLowerCase();
+  const obras = S.shows.filter(s => key && String(s.author || '').toLowerCase().includes(key));
+  box.innerHTML = `
+    <div class="actor-hero">
+      <div>
+        <div class="actor-photo-big">${a.image ? imgTag(a.image, `alt="${esc(a.name)}"`) : esc((a.name || '?')[0])}</div>
+      </div>
+      <div>
+        <button class="art-back" onclick="go('elenco',event)">← Volver al elenco</button>
+        <h1 class="actor-name-big" style="margin-top:20px">${esc(a.name)}</h1>
+        <div class="actor-role-big">${esc(a.role || '')}</div>
+        <div class="rich">${richHTML(a.bio) || '<p style="color:var(--text-muted)">Biografía próximamente.</p>'}</div>
+      </div>
+    </div>
+    ${obras.length ? `
+    <div class="actor-shows">
+      <h3>Obras</h3>
+      ${obras.map(s => `
+        <div class="actor-show-item">
+          <span>${esc(s.title)}</span>
+          <span style="color:var(--text-muted)">${esc(s.year || '')}</span>
+        </div>`).join('')}
+    </div>` : ''}`;
 }
 
 function esc(t) {
