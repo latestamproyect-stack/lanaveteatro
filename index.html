@@ -561,6 +561,8 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
       <div class="aside-link active" onclick="asec('brand')">🏢 Compañía</div>
       <div class="aside-link" onclick="asec('actors')">👤 Elenco</div>
       <div class="aside-link" onclick="asec('shows')">🎭 Obras</div>
+      <div class="aside-link" onclick="asec('paco')">✍️ Paco Mufote</div>
+      <div class="aside-link" onclick="asec('cura')">🗂 Curaduría</div>
       <div class="aside-link" onclick="asec('events')">📅 Funciones</div>
       <div class="aside-link" onclick="asec('news')">📰 Noticias</div>
       <div class="aside-link" onclick="asec('gallery')">🖼 Galería</div>
@@ -594,36 +596,6 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','image')">Imagen</button>
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','video')">Video</button>
 </div><div class="rte-body" id="a-about-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-about')"></div></div></div>
-        <div class="form-group"><label>Página de Paco Mufote (texto completo) <span class="cnt" id="cnt-a-paco"></span></label><div class="rte"><div class="rte-bar">
-<select onchange="rteFont('a-paco',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
-<select onchange="rteSize('a-paco',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
-<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-paco','foreColor',this.value)">
-<span class="rte-sep"></span>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','bold')"><b>B</b></button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','italic')"><i>I</i></button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','underline')"><u>U</u></button>
-<span class="rte-sep"></span>
-<select onchange="rteBlock('a-paco',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','insertUnorderedList')">• Lista</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','removeFormat')">Limpiar</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','image')">Imagen</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','video')">Video</button>
-</div><div class="rte-body" id="a-paco-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-paco')"></div></div></div>
-        <div class="form-group"><label>Página de Curaduría (texto completo) <span class="cnt" id="cnt-a-cura"></span></label><div class="rte"><div class="rte-bar">
-<select onchange="rteFont('a-cura',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
-<select onchange="rteSize('a-cura',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
-<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-cura','foreColor',this.value)">
-<span class="rte-sep"></span>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','bold')"><b>B</b></button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','italic')"><i>I</i></button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','underline')"><u>U</u></button>
-<span class="rte-sep"></span>
-<select onchange="rteBlock('a-cura',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','insertUnorderedList')">• Lista</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','removeFormat')">Limpiar</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','image')">Imagen</button>
-<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','video')">Video</button>
-</div><div class="rte-body" id="a-cura-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-cura')"></div></div></div>
         <div class="form-row">
           <div class="form-group"><label>Email de contacto</label><input id="a-email" type="email"></div>
           <div class="form-group"><label>Teléfono</label><input id="a-phone" type="text"></div>
@@ -641,6 +613,51 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
         </div>
         <button class="btn-primary" onclick="saveBrand()">Guardar cambios</button>
         <span class="save-ok" id="ok-brand">✓ Guardado</span>
+      </div>
+
+      <!-- PACO MUFOTE -->
+      <div class="admin-section" id="asec-paco">
+        <h2>Página de Paco Mufote</h2>
+        <p style="color:var(--text-muted);font-size:13px;margin-bottom:18px;line-height:1.6">Biografía, trayectoria, fotos o videos. Debajo de este texto aparecen solas las obras de "Muestras" donde el autor o el elenco mencione a Paco Mufote.</p>
+        <div class="form-group"><label>Texto de la página de Paco Mufote <span class="cnt" id="cnt-a-paco"></span></label><div class="rte"><div class="rte-bar">
+<select onchange="rteFont('a-paco',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
+<select onchange="rteSize('a-paco',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
+<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-paco','foreColor',this.value)">
+<span class="rte-sep"></span>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','bold')"><b>B</b></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','italic')"><i>I</i></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','underline')"><u>U</u></button>
+<span class="rte-sep"></span>
+<select onchange="rteBlock('a-paco',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','insertUnorderedList')">• Lista</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','removeFormat')">Limpiar</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','image')">Imagen</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','video')">Video</button>
+</div><div class="rte-body" id="a-paco-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-paco')"></div></div></div>
+        <button class="btn-primary" onclick="saveBrand('ok-paco')">Guardar cambios</button>
+        <span class="save-ok" id="ok-paco">✓ Guardado</span>
+      </div>
+
+      <!-- CURADURÍA -->
+      <div class="admin-section" id="asec-cura">
+        <h2>Página de Curaduría</h2>
+        <div class="form-group"><label>Texto de la página de Curaduría <span class="cnt" id="cnt-a-cura"></span></label><div class="rte"><div class="rte-bar">
+<select onchange="rteFont('a-cura',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
+<select onchange="rteSize('a-cura',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
+<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-cura','foreColor',this.value)">
+<span class="rte-sep"></span>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','bold')"><b>B</b></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','italic')"><i>I</i></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','underline')"><u>U</u></button>
+<span class="rte-sep"></span>
+<select onchange="rteBlock('a-cura',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','insertUnorderedList')">• Lista</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','removeFormat')">Limpiar</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','image')">Imagen</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','video')">Video</button>
+</div><div class="rte-body" id="a-cura-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-cura')"></div></div></div>
+        <button class="btn-primary" onclick="saveBrand('ok-cura')">Guardar cambios</button>
+        <span class="save-ok" id="ok-cura">✓ Guardado</span>
       </div>
 
       <!-- ACTORS -->
@@ -2049,7 +2066,7 @@ function asec(id) {
   event.currentTarget.classList.add('active');
   if (id==='stats') { initStats(); return; }
   if (id==='subs') { loadSubs(); return; }
-  if (id==='brand') renderAdminBrand();
+  if (id==='brand' || id==='paco' || id==='cura') renderAdminBrand();
   else renderAdminLists();
 }
 
@@ -2077,7 +2094,7 @@ function renderAdminBrand() {
   document.getElementById('a-tt').value       = b.social.TikTok||'';
 }
 
-async function saveBrand() {
+async function saveBrand(okId) {
   S.brand = {
     name:     document.getElementById('a-name').value.trim(),
     founded:  document.getElementById('a-founded').value.trim(),
@@ -2102,7 +2119,7 @@ async function saveBrand() {
   };
   if (!(await saveState())) return;
   applyBrand();
-  flashOk('ok-brand');
+  flashOk(okId || 'ok-brand');
 }
 
 function renderAdminLists() {
