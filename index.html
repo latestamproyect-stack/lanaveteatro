@@ -1259,8 +1259,14 @@ function showCardHTML(s) {
       </div>`;
 }
 
+// Más nuevas arriba: por año (descendente); en el mismo año, la cargada más recientemente primero
+function sortShows(list) {
+  return [...list].sort((a,b) =>
+    (Number(b.year)||0) - (Number(a.year)||0) || (Number(b.id)||0) - (Number(a.id)||0));
+}
+
 function renderShowCards(year) {
-  const list = year==='Todos' ? S.shows : S.shows.filter(s=>s.year===year);
+  const list = sortShows(year==='Todos' ? S.shows : S.shows.filter(s=>s.year===year));
   document.getElementById('grid-shows').innerHTML = list.length
     ? list.map(showCardHTML).join('')
     : '<p style="padding:40px;color:var(--text-muted);text-align:center;grid-column:1/-1">No hay obras registradas aún.</p>';
@@ -1269,8 +1275,8 @@ function renderShowCards(year) {
 function renderPaco() {
   const bio = richHTML(S.brand.paco);
   // Obras en las que aparece como autor/dirección (se toman solas de "Muestras")
-  const obras = S.shows.filter(s => plainText(s.author).toLowerCase().includes('paco mufote'))
-                       .sort((a,b) => String(b.year).localeCompare(String(a.year)));
+  const obras = sortShows(S.shows.filter(s => plainText(s.author).toLowerCase().includes('paco mufote')));
+
   document.getElementById('paco-body').innerHTML = bio ||
     (obras.length ? '' : '<p style="color:var(--text-muted);text-align:center">Próximamente.</p>');
   document.getElementById('paco-obras-wrap').style.display = obras.length ? 'block' : 'none';
