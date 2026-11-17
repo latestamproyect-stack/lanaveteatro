@@ -38,6 +38,9 @@ nav a{color:var(--text-muted);text-decoration:none;font-size:11px;font-weight:50
   transition:color .2s,background .2s;}
 nav a:hover,nav a.active{color:var(--text);background:var(--border);}
 nav a.active{color:var(--red-bright);}
+@media(min-width:901px) and (max-width:1260px){
+  nav a{padding:6px 6px;font-size:10px;letter-spacing:.8px;}
+}
 .hright{display:flex;align-items:center;gap:10px;}
 .toggle{width:36px;height:20px;border-radius:10px;background:var(--border);
   border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;}
@@ -94,8 +97,7 @@ nav a.active{color:var(--red-bright);}
 .wrap{max-width:1100px;margin:0 auto;padding:0 24px 80px;}
 .grid-actors{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
   gap:1px;background:var(--border);}
-.grid-shows{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:1px;background:var(--border);}
+.grid-shows{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px;}
 .grid-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px;}
 
 /* CARDS */
@@ -110,16 +112,48 @@ nav a.active{color:var(--red-bright);}
 .actor-bio{font-size:12px;line-height:1.6;color:var(--text-muted);
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 
-.card-show{background:var(--bg);padding:26px 22px;transition:background .2s;}
-.card-show:hover{background:var(--bg3);}
-.show-year{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red-bright);margin-bottom:8px;}
-.show-title{font-family:var(--font-h);font-size:22px;color:var(--text);margin-bottom:6px;line-height:1.2;}
-.show-author{font-size:11px;color:var(--text-muted);margin-bottom:10px;}
-.show-desc{font-size:12px;line-height:1.6;color:var(--text-muted);}
+.card-show{background:var(--bg2);border:1px solid var(--border);display:flex;flex-direction:column;
+  overflow:hidden;cursor:pointer;min-width:0;transition:transform .2s,border-color .2s,box-shadow .2s;}
+.card-show:hover,.card-show:focus-visible{transform:translateY(-4px);border-color:var(--red-bright);
+  box-shadow:0 12px 28px rgba(0,0,0,0.35);outline:none;}
+.show-cover{position:relative;aspect-ratio:3/4;background:var(--bg3);overflow:hidden;}
+.show-cover img{width:100%;height:100%;object-fit:cover;display:block;margin:0;transition:transform .4s;}
+.card-show:hover .show-cover img{transform:scale(1.04);}
+.show-cover.empty{display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-h);font-size:64px;color:var(--red-bright);opacity:.8;}
+.show-year{position:absolute;top:10px;left:10px;z-index:1;font-size:10px;letter-spacing:2px;
+  color:#fff;background:rgba(0,0,0,0.72);padding:4px 9px;border-left:2px solid var(--red-bright);}
+.show-body{display:flex;flex-direction:column;flex:1;padding:18px 18px 20px;}
+.show-title{font-family:var(--font-h);font-size:22px;color:var(--text);margin-bottom:6px;line-height:1.2;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.show-author{font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.show-desc{font-size:12px;line-height:1.6;color:var(--text-muted);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.show-more{margin-top:auto;padding-top:14px;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--red-bright);transition:letter-spacing .2s;}
+.card-show:hover .show-more{letter-spacing:1.6px;}
+.sub-h{font-family:var(--font-h);font-size:32px;font-weight:300;margin:56px 0 24px;
+  padding-top:28px;border-top:1px solid var(--border);}
+.show-view{max-width:720px;padding:0;}
+.show-view-head{padding:32px 32px 8px;}
+.show-view-body{padding:0 32px 32px;}
+.show-view .show-year{position:static;display:inline-block;margin-bottom:12px;}
+.show-view h3{margin-bottom:8px;}
+.show-view-author{font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:18px;}
+.show-view-close{position:sticky;top:0;float:right;margin:12px 12px 0 0;z-index:2;}
 .show-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;
   font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--red-bright);
   text-decoration:none;transition:gap .2s;}
 .show-link:hover{gap:10px;}
+@media(max-width:560px){
+  .grid-shows{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+  .show-body{padding:12px 12px 14px;}
+  .show-title{font-size:17px;}
+  .show-desc{display:none;}
+  .show-view-head{padding:24px 20px 8px;}
+  .show-view-body{padding:0 20px 24px;}
+}
 
 .card-blog{background:var(--bg);padding:28px;transition:background .2s;
   display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
@@ -380,6 +414,8 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
     <a href="#sobre" onclick="go('sobre',event)">Sobre nosotros</a>
     <a href="#elenco" onclick="go('elenco',event)">Elenco</a>
     <a href="#muestras" onclick="go('muestras',event)">Muestras</a>
+    <a href="#paco" onclick="go('paco',event)">Paco Mufote</a>
+    <a href="#curaduria" onclick="go('curaduria',event)">Curaduría</a>
     <a href="#proximas" onclick="go('proximas',event)">Próximas</a>
     <a href="#noticias" onclick="go('noticias',event)">Noticias</a>
     <a href="#galeria" onclick="go('galeria',event)">Galería</a>
@@ -442,6 +478,26 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
     <div class="filters" id="show-filters"></div>
     <div class="grid-shows" id="grid-shows"></div>
   </div>
+  <footer class="site-footer"></footer>
+</div>
+
+<!-- ── PACO MUFOTE ── -->
+<div class="view" id="view-paco">
+  <div class="ph"><h1>Paco Mufote</h1><p>Dramaturgia y dirección</p></div>
+  <div class="wrap">
+    <div class="rich" id="paco-body" style="max-width:760px;margin:0 auto"></div>
+    <div id="paco-obras-wrap" style="display:none">
+      <h2 class="sub-h">Obras</h2>
+      <div class="grid-shows" id="grid-paco"></div>
+    </div>
+  </div>
+  <footer class="site-footer"></footer>
+</div>
+
+<!-- ── CURADURÍA ── -->
+<div class="view" id="view-curaduria">
+  <div class="ph"><h1>Curaduría</h1><p>Selección, criterios y programación</p></div>
+  <div class="wrap" style="max-width:760px"><div class="rich" id="curaduria-body"></div></div>
   <footer class="site-footer"></footer>
 </div>
 
@@ -538,6 +594,36 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','image')">Imagen</button>
 <button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-about','video')">Video</button>
 </div><div class="rte-body" id="a-about-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-about')"></div></div></div>
+        <div class="form-group"><label>Página de Paco Mufote (texto completo) <span class="cnt" id="cnt-a-paco"></span></label><div class="rte"><div class="rte-bar">
+<select onchange="rteFont('a-paco',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
+<select onchange="rteSize('a-paco',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
+<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-paco','foreColor',this.value)">
+<span class="rte-sep"></span>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','bold')"><b>B</b></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','italic')"><i>I</i></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','underline')"><u>U</u></button>
+<span class="rte-sep"></span>
+<select onchange="rteBlock('a-paco',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','insertUnorderedList')">• Lista</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-paco','removeFormat')">Limpiar</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','image')">Imagen</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-paco','video')">Video</button>
+</div><div class="rte-body" id="a-paco-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-paco')"></div></div></div>
+        <div class="form-group"><label>Página de Curaduría (texto completo) <span class="cnt" id="cnt-a-cura"></span></label><div class="rte"><div class="rte-bar">
+<select onchange="rteFont('a-cura',this)" title="Fuente"><option value="">Fuente</option><option value="Inter">Inter</option><option value="Cormorant Garamond">Cormorant</option><option value="Georgia">Georgia</option><option value="Arial">Arial</option><option value="Courier New">Courier</option></select>
+<select onchange="rteSize('a-cura',this)" title="Tamaño"><option value="">Tamaño</option><option value="13">Pequeño</option><option value="16">Normal</option><option value="20">Grande</option><option value="28">Enorme</option></select>
+<input type="color" value="#e8e2d9" title="Color" onchange="rteCmd('a-cura','foreColor',this.value)">
+<span class="rte-sep"></span>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','bold')"><b>B</b></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','italic')"><i>I</i></button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','underline')"><u>U</u></button>
+<span class="rte-sep"></span>
+<select onchange="rteBlock('a-cura',this)" title="Estilo"><option value="">Estilo</option><option value="P">Párrafo</option><option value="H2">Título grande</option><option value="H3">Subtítulo</option></select>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','insertUnorderedList')">• Lista</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteCmd('a-cura','removeFormat')">Limpiar</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','image')">Imagen</button>
+<button type="button" onmousedown="event.preventDefault()" onclick="rteMedia('a-cura','video')">Video</button>
+</div><div class="rte-body" id="a-cura-body" contenteditable="true" style="min-height:260px" oninput="rteCount('a-cura')"></div></div></div>
         <div class="form-row">
           <div class="form-group"><label>Email de contacto</label><input id="a-email" type="email"></div>
           <div class="form-group"><label>Teléfono</label><input id="a-phone" type="text"></div>
@@ -634,6 +720,14 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 </div>
 
 </div><!-- #app -->
+
+<!-- VER OBRA (público) -->
+<div class="modal-bg" id="modal-show-view" onclick="if(event.target===this)closeShowView()">
+  <div class="modal show-view">
+    <button class="btn-outline show-view-close" onclick="closeShowView()" aria-label="Cerrar">✕</button>
+    <div id="show-view-content"></div>
+  </div>
+</div>
 
 <!-- ══ MODALS ══ -->
 <!-- ACTOR MODAL -->
@@ -802,7 +896,7 @@ footer{text-align:center;padding:20px;font-size:11px;letter-spacing:1px;
 // ══════════════════════════════════════════
 const DEFAULT = {
   brand: {
-    name: '', founded: '', tagline: '', about: '',
+    name: '', founded: '', tagline: '', about: '', paco: '', curaduria: '',
     contact: { email: '', phone: '', location: '' },
     hours: '',
     social: { Facebook: '', Instagram: '', YouTube: '', TikTok: '' }
@@ -967,7 +1061,7 @@ function showAdminPanel() {
   document.getElementById('btn-admin').style.display = 'inline-block';
   document.getElementById('btn-admin').textContent = '✎ Panel';
   if (location.hash !== '#admin') history.pushState(null,'','#admin');
-  const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
+  const VIEWS = ['home','sobre','buscar','elenco','muestras','paco','curaduria','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
   VIEWS.forEach(v => { const el=document.getElementById('view-'+v); if(el) el.classList.remove('active'); });
   document.getElementById('view-admin').classList.add('active');
   toggleMenu(false);
@@ -979,7 +1073,7 @@ function showAdminPanel() {
 // ══════════════════════════════════════════
 // ROUTER
 // ══════════════════════════════════════════
-const VIEWS = ['home','sobre','buscar','elenco','muestras','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
+const VIEWS = ['home','sobre','buscar','elenco','muestras','paco','curaduria','proximas','noticias','noticia','actor','galeria','contacto','admin-login','admin'];
 
 function go(view, e) {
   if (e) e.preventDefault();
@@ -1032,7 +1126,7 @@ function handleHash() {
     if (hash.startsWith('noticia/')) { openNews(hash.slice(8)); return; }
     if (hash.startsWith('actor/')) { openActor(hash.slice(6)); return; }
     if (hash === 'blog') hash = 'noticias';   // enlaces viejos
-    const valid = ['home','sobre','buscar','elenco','muestras','proximas','noticias','galeria','contacto','admin'];
+    const valid = ['home','sobre','buscar','elenco','muestras','paco','curaduria','proximas','noticias','galeria','contacto','admin'];
     go(valid.includes(hash) ? hash : 'home');
   } finally { navFromHash = false; }
 }
@@ -1047,6 +1141,8 @@ function renderView(v) {
   if (v==='home')     renderHome();
   if (v==='elenco')   renderElenco();
   if (v==='muestras') renderMuestras();
+  if (v==='paco')     renderPaco();
+  if (v==='curaduria') renderCuraduria();
   if (v==='proximas') renderProximas();
   if (v==='noticias') renderNoticias();
   if (v==='galeria')  renderGaleria();
@@ -1118,19 +1214,77 @@ function filterShows(year, btn) {
   renderShowCards(year);
 }
 
+function showCover(html) {
+  if (!html || !/<img/i.test(html)) return '';
+  const t = document.createElement('template');
+  t.innerHTML = html;
+  const img = t.content.querySelector('img');
+  return img ? (img.getAttribute('src') || '') : '';
+}
+
+function showCardHTML(s) {
+  const i = S.shows.indexOf(s);
+  const cover = showCover(s.desc);
+  let excerpt = plainText(s.desc);
+  if (excerpt.length > 220) excerpt = excerpt.slice(0,220).trim() + '…';
+  return `
+      <div class="card-show" role="button" tabindex="0" onclick="openShow(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openShow(${i})}">
+        <div class="show-cover${cover?'':' empty'}">
+          <span class="show-year">${esc(s.year)}</span>
+          ${cover ? `<img src="${esc(cover)}" alt="${esc(s.title)}" loading="lazy">` : esc((s.title||'?').trim().charAt(0).toUpperCase())}
+        </div>
+        <div class="show-body">
+          <div class="show-title">${esc(s.title)}</div>
+          <div class="show-author">${esc(plainText(s.author))}</div>
+          <div class="show-desc">${esc(excerpt)}</div>
+          <div class="show-more">Ver más →</div>
+        </div>
+      </div>`;
+}
+
 function renderShowCards(year) {
   const list = year==='Todos' ? S.shows : S.shows.filter(s=>s.year===year);
   document.getElementById('grid-shows').innerHTML = list.length
-    ? list.map(s=>`
-      <div class="card-show">
-        <div class="show-year">${s.year}</div>
-        <div class="show-title">${s.title}</div>
-        <div class="show-author">${s.author}</div>
-        <div class="show-desc">${richHTML(s.desc)}</div>
-        ${s.url?`<a class="show-link" href="${s.url}" target="_blank" rel="noopener">Ver más →</a>`:''}
-      </div>`).join('')
-    : '<p style="padding:40px;color:var(--text-muted);text-align:center">No hay obras registradas aún.</p>';
+    ? list.map(showCardHTML).join('')
+    : '<p style="padding:40px;color:var(--text-muted);text-align:center;grid-column:1/-1">No hay obras registradas aún.</p>';
 }
+
+function renderPaco() {
+  const bio = richHTML(S.brand.paco);
+  // Obras en las que aparece como autor/dirección (se toman solas de "Muestras")
+  const obras = S.shows.filter(s => plainText(s.author).toLowerCase().includes('paco mufote'))
+                       .sort((a,b) => String(b.year).localeCompare(String(a.year)));
+  document.getElementById('paco-body').innerHTML = bio ||
+    (obras.length ? '' : '<p style="color:var(--text-muted);text-align:center">Próximamente.</p>');
+  document.getElementById('paco-obras-wrap').style.display = obras.length ? 'block' : 'none';
+  document.getElementById('grid-paco').innerHTML = obras.map(showCardHTML).join('');
+}
+
+function renderCuraduria() {
+  document.getElementById('curaduria-body').innerHTML =
+    richHTML(S.brand.curaduria) || '<p style="color:var(--text-muted);text-align:center">Próximamente.</p>';
+}
+
+function openShow(i) {
+  const s = S.shows[i];
+  if (!s) return;
+  document.getElementById('show-view-content').innerHTML = `
+    <div class="show-view-head">
+      <span class="show-year">${esc(s.year)}</span>
+      <h3>${esc(s.title)}</h3>
+      <div class="show-view-author">${esc(plainText(s.author))}</div>
+    </div>
+    <div class="show-view-body">
+      <div class="rich">${richHTML(s.desc)}</div>
+      ${s.url?`<a class="show-link" href="${esc(s.url)}" target="_blank" rel="noopener">Ver más →</a>`:''}
+    </div>`;
+  document.getElementById('modal-show-view').classList.add('open');
+}
+
+function closeShowView() {
+  document.getElementById('modal-show-view').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShowView(); });
 
 function todayStr() {
   const d = new Date();
@@ -1471,6 +1625,8 @@ function searchItems() {
   const b = S.brand, items = [];
   items.push({ label: 'Inicio', title: brandName(), text: [b.shortDesc, b.hours, b.contact.location].join(' '), go: "go('home')" });
   items.push({ label: 'Sobre nosotros', title: 'Sobre nosotros', text: plainText(b.about), go: "go('sobre')" });
+  items.push({ label: 'Paco Mufote', title: 'Paco Mufote', text: plainText(b.paco), go: "go('paco')" });
+  items.push({ label: 'Curaduría', title: 'Curaduría', text: plainText(b.curaduria), go: "go('curaduria')" });
   S.actors.forEach(a => items.push({ label: 'Elenco', title: a.name || '', text: [a.role, plainText(a.bio)].join(' '), go: "go('elenco')" }));
   S.shows.forEach(s => items.push({ label: 'Muestras', title: s.title || '', text: [s.author, s.year, plainText(s.desc)].join(' '), go: "go('muestras')" }));
   S.events.forEach(e => items.push({ label: 'Próximas funciones', title: e.title || '', text: [e.place, e.date, plainText(e.desc)].join(' '), go: "go('proximas')" }));
@@ -1500,7 +1656,7 @@ function renderBuscar() {
 // ══════════════════════════════════════════
 // ESTADÍSTICAS (contadores diarios en Firestore)
 // ══════════════════════════════════════════
-const VIEW_LABEL = { home:'Inicio', sobre:'Sobre nosotros', elenco:'Elenco', muestras:'Muestras', proximas:'Próximas funciones', noticias:'Noticias', noticia:'Noticia', galeria:'Galería', contacto:'Contacto', buscar:'Buscar' };
+const VIEW_LABEL = { home:'Inicio', sobre:'Sobre nosotros', elenco:'Elenco', muestras:'Muestras', paco:'Paco Mufote', curaduria:'Curaduría', proximas:'Próximas funciones', noticias:'Noticias', noticia:'Noticia', galeria:'Galería', contacto:'Contacto', buscar:'Buscar' };
 
 function dayKey(d) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -1904,6 +2060,10 @@ function renderAdminBrand() {
   document.getElementById('a-tagline').value  = b.tagline||'';
   rteSet('a-about', b.about||'');
   rteCount('a-about');
+  rteSet('a-paco', b.paco||'');
+  rteCount('a-paco');
+  rteSet('a-cura', b.curaduria||'');
+  rteCount('a-cura');
   document.getElementById('a-short').value = b.shortDesc||'';
   document.getElementById('a-wa').value = b.whatsapp||'';
   countChars(document.getElementById('a-short'));
@@ -1923,6 +2083,8 @@ async function saveBrand() {
     founded:  document.getElementById('a-founded').value.trim(),
     tagline:  document.getElementById('a-tagline').value,
     about:    rteGet('a-about'),
+    paco:     rteGet('a-paco'),
+    curaduria: rteGet('a-cura'),
     contact: {
       email:    document.getElementById('a-email').value,
       phone:    document.getElementById('a-phone').value,
